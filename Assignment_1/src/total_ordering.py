@@ -10,7 +10,7 @@ class TotalOrderingProcess(AbstractProcess):
     def generate_ack(self, msg):
         return Message("ACK", f"{msg.sender}, {msg.timestamp}", self.idx, self.LSC)
 
-    async def increment_clock(self, msg=None):
+    def increment_clock(self, msg=None):
         if not msg:
             self.LSC += 1
         else:
@@ -18,7 +18,7 @@ class TotalOrderingProcess(AbstractProcess):
 
     async def algorithm(self):
         if self.first_cycle:
-            await self.increment_clock()
+            self.increment_clock()
             msg = Message("MSG", f"Hello world", self.idx, self.LSC)
             to = list(self.addresses.keys())[0]
             await self.send_message(msg, to)
@@ -28,11 +28,11 @@ class TotalOrderingProcess(AbstractProcess):
         if self.buffer.has_messages():
             # Retrieve message
             msg: Message = self.buffer.get()
-            await self.increment_clock(msg)
+            self.increment_clock(msg)
             print(f'Got {msg.form} "{msg.content}" from process {msg.sender} at LSC {self.LSC}')
             # Compose echo message
             if msg.form != "ACK":
-                await self.increment_clock()
+                self.increment_clock()
                 ack_msg = self.generate_ack(msg)
                 await self.send_message(ack_msg, msg.sender)
             else:

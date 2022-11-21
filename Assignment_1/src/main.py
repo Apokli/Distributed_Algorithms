@@ -17,7 +17,7 @@ def load_addresses(path: Union[str, Path]) -> dict:
     # Good practice to work with path objects
     path = Path(path)
     f = open(path, 'r')
-    for line in f:
+    for line in f.readlines():
         # We expect a triple seperated by spaces
         pid, host, port = line.rstrip().split(' ')
         addresses[int(pid)] = (host, int(port))

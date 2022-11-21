@@ -1,7 +1,3 @@
-# addition nodes can be added under services.
-# Make sure that all nodes have a port that on the host device that is unique.
-# For example node0 has port 9090, node1 has 9091. Additional nodes can be numbered in the same way.
-# Make sure the name of the node and the (host) port number correspond to the ones listed in addresses_docker.txt
 version: '3.3'
 services:
   node0:
@@ -16,3 +12,15 @@ services:
       - '9091:9091'
     environment:
       PID: 1
+  node2:
+    build: .
+    ports:
+      - '9092:9092'
+    environment:
+      PID: 2
+  node3:
+    build: .
+    ports:
+      - '9093:9093'
+    environment:
+      PID: 3
