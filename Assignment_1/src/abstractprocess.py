@@ -78,7 +78,7 @@ class AbstractProcess(ABC):
     def __init__(self, idx: int, addresses):
         self.idx = idx
         self.addresses: dict = addresses
-        self.host, self.port = self.addresses.pop(self.idx)
+        self.host, self.port = self.addresses[self.idx]
         self.buffer = MessageBuffer()
 
     @abstractmethod

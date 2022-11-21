@@ -18,9 +18,3 @@ services:
       - '9092:9092'
     environment:
       PID: 2
-  node3:
-    build: .
-    ports:
-      - '9093:9093'
-    environment:
-      PID: 3
