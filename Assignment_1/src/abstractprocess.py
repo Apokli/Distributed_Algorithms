@@ -24,19 +24,10 @@ class Message:
         self.timestamp = timestamp
 
     def encode(self) -> bytes:
-        """
-        Make sure we are serializable with EOF line ending
-        :return: Bytestring of the object
-        """
         return pickle.dumps(self) + '\n'.encode()
 
     @classmethod
     def decode(cls, bytestring) -> Message:
-        """
-        Make sure we can decode messages
-        :param bytestring: bytestring of the Message object
-        :return: Message object
-        """
         return pickle.loads(bytestring)
 
 
