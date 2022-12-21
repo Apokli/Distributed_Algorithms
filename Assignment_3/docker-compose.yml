@@ -1,0 +1,20 @@
+version: '3.3'
+services:
+  node0:
+    build: .
+    ports:
+      - '9090:9090'
+    environment:
+      PID: 0
+  node1:
+    build: .
+    ports:
+      - '9091:9091'
+    environment:
+      PID: 1
+  node2:
+    build: .
+    ports:
+      - '9092:9092'
+    environment:
+      PID: 2

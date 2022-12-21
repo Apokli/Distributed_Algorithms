@@ -23,6 +23,10 @@ class GlobalStateProcess(AbstractProcess):
         self.record_done = True
         self.load_test_events()                 # Load tests from "total_ordering.py"
 
+        # For stopping the algorithm
+        self.term = False
+        self.term_acks = 0
+
     # propagate the global state recording attempt
     async def record_and_send_markers(self, src_id):
         self.local_record.money = self.money
@@ -43,6 +47,8 @@ class GlobalStateProcess(AbstractProcess):
                 await self.record_and_send_markers(msg.sender)
             else:
                 self.local_record.channel_open[msg.sender] = False
+        elif msg.form == "TER":
+            self.term_acks += 1
         else:
             if self.local_record.channel_open[msg.sender] == True:
                 self.local_record.channel_buffers[msg.sender].append(msg)
@@ -54,6 +60,7 @@ class GlobalStateProcess(AbstractProcess):
 
     def load_test_events(self):
         self.test_events = test_events[self.idx]
+        self.last_clock = list(self.test_events.keys())[-1]
 
     # run test case
     async def run_test(self):
@@ -69,6 +76,13 @@ class GlobalStateProcess(AbstractProcess):
                     print(f"(ID:{self.idx}) gave (ID:{int(words[-1])}) {words[1]} bucks")
                 msg = Message("MSG", msg_content, self.idx)
                 await self.send_message(msg, int(words[-1]))
+
+            # Terminate Request
+            if self.test_clock == self.last_clock:
+                self.term = True
+                for id in self.addresses.keys():
+                    msg = Message("TER", "", self.idx)
+                    await self.send_message(msg, id) 
 
     async def algorithm(self):
         self.test_clock += 1
@@ -86,7 +100,7 @@ class GlobalStateProcess(AbstractProcess):
                 self.record_done = True
         
         # end
-        if self.local_record.self_recorded and self.record_done:     # really ends
+        if self.term and self.term_acks == len(self.addresses) and self.local_record.self_recorded and self.record_done:     # really ends
             print(f"(ID:{self.idx}) has done recording")
             print(f"(ID:{self.idx}) has money: {self.local_record.money}")
             for id in self.addresses.keys():
