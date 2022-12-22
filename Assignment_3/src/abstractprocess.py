@@ -14,11 +14,13 @@ class Message:
     """
     receiver = 0
     sender = 0
+    owner_id = 0
     level = 0
 
-    def __init__(self, receiver, level, sender):
-        self.receiver = 0   # 0 for ordinary, 1 for candidate
+    def __init__(self, receiver, level, owner_id, sender):
+        self.receiver = receiver   # 0 for ordinary, 1 for candidate, 2 for done election
         self.level = level
+        self.owner_id = owner_id
         self.sender = sender
 
     def encode(self) -> bytes:
