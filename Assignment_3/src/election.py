@@ -12,7 +12,7 @@ class ElectionProcess(AbstractProcess):
         self.tracking = self.idx
         self.parent = None
         self.potential_parent = None
-        self.level = 0
+        self.level = -1
 
         self.is_candidate = False
         self.candidate_receiving = False
@@ -90,8 +90,12 @@ class ElectionProcess(AbstractProcess):
         if self.test_clock in self.test_events.keys():
             msg_content = self.test_events[self.test_clock]
             if msg_content == "start":
-                print(f"\n\n ---- ==== election initiated by {self.idx} ==== ---- \n\n")
-                self.is_candidate = True
+                if self.parent is None:
+                    print(f"\n ---- ==== election initiated by {self.idx} ==== ---- \n")
+                    self.level = 0
+                    self.is_candidate = True
+                else:
+                    print(f"\n (ID: {self.idx}) cannot start election because he has already been captured \n")
 
     async def algorithm(self):
         self.test_clock += 1

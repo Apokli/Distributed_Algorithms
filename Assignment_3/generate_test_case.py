@@ -1,27 +1,22 @@
 import sys
-from random import randint, sample
+import random
+import numpy as np
 
 if __name__ == "__main__":
     num_of_nodes = int(sys.argv[1])
-    trans = 10
-    greets = 5
+    candidate_chance = 0.25
+    has_candidate = False
+    beta = 10   # The lower the more likely it happens at the start
     
-    generator = sample([1 for _ in range(trans)] + [0 for _ in range(greets)] + [2], trans + greets + 1)
     clocks = [0 for _ in range(num_of_nodes)]
     events = [dict() for _ in range(num_of_nodes)]
 
-    for i in generator:
-        src = randint(0, num_of_nodes - 1)
-        clocks[src] += randint(1, 4)
-        dst = src
-        while dst == src:
-            dst = randint(0, num_of_nodes - 1)
-        if i == 0:
-            events[src][clocks[src]] = f"How are you doing! {dst}"
-        elif i == 1:
-            events[src][clocks[src]] = f"Give {randint(1, 10) * 100} to {dst}"
-        else:
-            events[src][clocks[src]] = "Initiate Record"
+    for i in range(num_of_nodes):
+        is_candidate = candidate_chance - random.random()
+        if is_candidate > 0 or (i == num_of_nodes - 1 and not has_candidate):
+            has_candidate = True
+            clocks[i] = int(np.random.exponential(scale=beta)) + 1
+            events[i][clocks[i]] = "start"
 
     with open("./src/test_cases.py", 'w') as test_cases:
         test_cases.write("test_events = [\n")
